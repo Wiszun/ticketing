@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expiration-redis-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expiration-redis
+  template:
+    metadata:
+      labels:
+        app: expiration-redis
+    spec:
+      containers:
+        - name: expiration-redis
+          image: redis
+# triple dash is an separator between services
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expiration-redis-srv
+spec:
+  selector:
+    # app property is a name of a POD that the ClusterIP service is granting access to
+    app: expiration-redis
+  ports:
+    # this name property is not super important - just for logging purposes
+    - name: db
+      protocol: TCP
+      port: 6379
+      targetPort: 6379
